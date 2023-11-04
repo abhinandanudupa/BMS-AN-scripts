@@ -215,6 +215,7 @@ N_MENTEES = len(mentees)
 allocations = allocate_mentors(mentees, mentors)
 N_ALLOCATED = len(allocations)
 
+print("------------------------------------------------------")
 print(f"Mentors: {N_MENTORS}\nMentees: {N_MENTEES}\nAllocated: {N_ALLOCATED}")
 
 with open(SAVE_FILE, "w", encoding="utf8") as f:
@@ -251,5 +252,8 @@ me_allocated_ns = [m.name for (m, _, _) in allocations]
 not_allocated = [m for m in mentees if m.name not in me_allocated_ns]
 
 if len(not_allocated) > 0:
+    print("------------------------------------------------------")
+    print("Here are the people who are not allocated any mentors:")
     for m in not_allocated:
         print(m)
+        print("------------------------------------------------------")
