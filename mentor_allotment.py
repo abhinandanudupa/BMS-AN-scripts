@@ -63,6 +63,7 @@ class Mentee:
         return (
 f"""{self.name}
 {self.email}
+{self.department}
 {self.ctype}
 {self.reg_time}
 {self.year}
@@ -170,7 +171,7 @@ def parse_mentees(csv_file):
             department = DPT_MPPNG[row["Department"]]
             reg_time = row["Timestamp"]
             reg_time = datetime.strptime(reg_time, '%m/%d/%Y %H:%M:%S')
-            reg_time = reg_time.hour * 3600 + reg_time.minute * 60 + reg_time.second
+            reg_time = reg_time.day * 3600 * 24 + reg_time.hour * 3600 + reg_time.minute * 60 + reg_time.second
             country = parse_country(row["One country you are interested in for higher education"])
             mentee = Mentee(name, email, year, country, reg_time, ctype, department, prefs)
             mentees.append(mentee)
@@ -196,6 +197,7 @@ def parse_mentors(csv_file):
 
         return mentors
 
+
 mentors = parse_mentors("./mentors.csv")
 mr_l = len(mentors)
 
@@ -216,7 +218,7 @@ print(f"Mentors: {mr_l}\nMentees: {me_l}\nAllocated: {a_l}")
 
 save_file = "allocations.csv"
 with open(save_file, "w") as f:
-    f_ns = ["mentee_name", "mentee_email", "mentor_name", "mentor_email", "country", "mentee_year", "mentor_capacity_left",]
+    f_ns = ["mentee_name", "mentee_email", "mentor_name", "mentor_email", "country", "mentee_year", "department", "mentor_capacity_left",]
     dw = DictWriter(f, fieldnames=f_ns)
 
     dw.writeheader()
@@ -228,7 +230,17 @@ with open(save_file, "w") as f:
                 "mentor_email": mr.email,
                 "country": me.country,
                 "mentee_year": me.year,
+                "department": me.department,
                 "mentor_capacity_left": mr.capacity,
                 }
         dw.writerow(item)
     print(f"Saved the allocations in {save_file}.")
+
+not_allocated = []
+me_allocated_ns = [m.name for (m, _, _) in allocations]
+not_allocated = [m for m in mentees if m.name not in me_allocated_ns]
+
+if len(not_allocated) > 0:
+    for m in not_allocated:
+        print(m)
+
